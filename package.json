@@ -1,0 +1,45 @@
+{
+  "author": "Van Carney <carney.van@gmail.com>",
+  "name": "apihero-module-jade-router",
+  "description": "View based request routing for Jade templates",
+  "keywords": [
+    "jade",
+    "loopback",
+    "API-Hero"
+  ],
+  "version": "0.0.1-alpha",
+  "main":"./index.js",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "github.com/vancarney/rikki-tikki.git"
+  },
+  "dependencies": {
+    "lodash": "3.6.0",
+    "jade":"^1.11.0",
+    "jadebars":"^0.5.1",
+    "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero",
+    "apihero-ui": "git+https://github.com/vancarney/backbone-ui#apihero-ui",
+    "loopback-connector-apihero-mongodb":"git+https://github.com/vancarney/loopback-connector-apihero-mongodb.git",
+    "strictly-hash": ">=0.0.2"
+  },
+  "devDependencies": {
+    "coffee-script": ">=1.9.1",
+    "express": "4.11.1 ",
+    "mocha": ">=1.12.0",
+    "chai": ">=1.7.2",
+    "docco": ">=0.6.2",
+    "supertest": ">=1.0.1",
+    "loopback-testing": "1.1.0",
+    "loopback-connector": "^2.2.1"
+  },
+  "homepage": "http://vancarney.github.io/rikki-tikki",
+  "scripts": {
+    "test": "cake test"
+  }
+}
