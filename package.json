@@ -22,11 +22,11 @@
   "dependencies": {
     "lodash": "3.6.0",
     "jade":"^1.11.0",
+    "fs-extra":"^0.20.1",
     "jadebars":"^0.5.1",
     "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero",
     "apihero-ui": "git+https://github.com/vancarney/backbone-ui#apihero-ui",
-    "loopback-connector-apihero-mongodb":"git+https://github.com/vancarney/loopback-connector-apihero-mongodb.git",
-    "strictly-hash": ">=0.0.2"
+    "loopback-connector-apihero-mongodb":"git+https://github.com/vancarney/loopback-connector-apihero-mongodb.git"
   },
   "devDependencies": {
     "coffee-script": ">=1.9.1",

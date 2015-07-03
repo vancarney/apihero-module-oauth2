@@ -19,9 +19,10 @@ if ((pkg.hasOwnProperty('name') && pkg.name != null && pkg.name.length) === fals
 	process.exit(1);
 }
 
-var main = path.join('./lib', pkg.name);
-	
-module.exports = fs.existsSync(main) ? require(main) : {};
+//-- attempts to require module. Note the manual prepending of the ./, this is due to join stripping it out
+module.exports = require( '.' + path.sep + path.join('lib', pkg.name) );
+
+//-- adds paths property onto exports with whatever files have been declared in the package config
 module.exports.paths = (pkg.hasOwnProperty('files') ? pkg.files : []).map( function(file) {
 	return path.join(__dirname, file);
 });
