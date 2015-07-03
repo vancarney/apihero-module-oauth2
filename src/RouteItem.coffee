@@ -1,12 +1,14 @@
-fs = require 'fs'
+fs = require 'fs-extra'
+path = require 'path'
 {_} = require 'lodash'
 ApiHero = require 'api-hero'
 class RouteItem
   constructor:(@route_item)->
   save:(callback)->
-    # console.log @route_item
-    fs.writeFile "#{@route_item.route_file}.js", @template(@route_item), {flag:'wx'}, (e)=>
-      callback?.apply @, arguments
+    fs.ensureDir path.dirname( p = "#{@route_item.route_file}.js"), (e)=>
+      return callback.apply @, arguments if e?
+      fs.writeFile p, @template(@route_item), {flag:'wx'}, (e)=>
+        callback?.apply @, arguments
 RouteItem.__template__ = """
 /**
  * <%= name %>.js

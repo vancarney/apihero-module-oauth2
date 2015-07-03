@@ -7,10 +7,14 @@ class RouteManager extends EventEmitter
   'use strict'
   routes:[]
   constructor:->
-    fs.ensureDir './views'
-    @load (e)=>
-      return if e?
-      @emit 'initialized', @routes
+    fs.ensureDir './views', =>
+      fs.ensureDir './routes', =>
+        @load (e)=>
+          return if e?
+          done = _.after @routes.length, => 
+            @emit 'initialized', @routes
+          _.each @routes, (route)=>
+            @createRoute route, done
   getRoute:(route)->
     _.where @routes, route_file: route
   createRoute:(routing, callback)->
@@ -58,6 +62,7 @@ class RouteManager extends EventEmitter
           continue unless (name.match /^[^_]+[a-zA-Z0-9_\.]+\.jade+$/)?
           routeItem =
             name: itemName
+            file_type: 'jade'
             query_method: if (itemName is 'index') then 'find' else 'findOne'
             route_file: "./#{path.join 'routes', dir.replace(/\/?views+/,''), itemName}"
             template_file: path.join dir.replace(/\/?views+/,''), itemName

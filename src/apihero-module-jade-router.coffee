@@ -6,19 +6,21 @@ module.exports.init = (app,options)->
   views = ['./views']
   app.once 'ahero-initialized', =>
     done = _.after app.ApiHero.loadedModules.length, =>
-      console.log views
       app.set 'view engine', 'jade'
       app.set 'views', views
-      _routeManager = RouteManager.getInstance()
-    app.ApiHero.createSyncInstance 'route', RoutesMonitor
-    .addSyncHandler 'route', 'added', (op)=>
-      _rm = RouteManager.getInstance()
-      if (route = _rm.getRoute op.name)?.length
-        _rm.createRoute route[0], (e)->
-          return console.log e if e?
-          setTimeout (=>
-            (require "#{path.join process.cwd(), route[0].route_file}").init app
-          ), 100
+    _routeManager = RouteManager.getInstance().on 'initialized', =>
+      console.log 'initialized'
+      app.ApiHero.createSyncInstance 'route', RoutesMonitor
+      .addSyncHandler 'route', 'added', (op)=>
+        if (route = _routeManager.getRoute op.name)?.length
+          _routeManager.createRoute route[0], (e)->
+            return console.log e if e?
+            setTimeout (=>
+              (require "#{path.join process.cwd(), route[0].route_file}").init app
+            ), 100
+      .addSyncHandler 'route', 'removed', (op)=>
+        fs.unlink "#{op.name}.js", (e)=>
+          console.log e if e?
     return done() unless app.ApiHero.loadedModules.length
     _.each app.ApiHero.loadedModules, (name)=>
       done() unless (module = require name).hasOwnProperty 'paths' and module.paths.length > 1
