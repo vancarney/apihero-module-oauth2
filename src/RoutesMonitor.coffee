@@ -2,7 +2,7 @@ fs = require 'fs'
 {_} = require 'lodash'
 {AbstractMonitor} = require 'api-hero'
 class RoutesMonitor extends AbstractMonitor
-  __path:'./views'
+  __path:"#{app_root || '.'}/views"
   constructor:->
     RoutesMonitor.__super__.constructor.call @
     @refresh (e,collection)=>
@@ -28,8 +28,10 @@ class RoutesMonitor extends AbstractMonitor
           # adds new item reference to list
           return {name:v.route_file}
         return null
+        
       del = _.filter @getCollection(), (v)=>
         _.pluck( routes, 'route_file').indexOf( v.route_file ) is -1
+        
       _.each del, (to_remove)=>
          @__collection.removeItemAt @getNames().indexOf to_remove.name
       # filters items from exclusion list and adds newly created items to collection

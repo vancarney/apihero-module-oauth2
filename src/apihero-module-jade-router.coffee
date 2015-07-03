@@ -3,7 +3,7 @@ path    = require 'path'
 _       = require 'lodash'
 
 module.exports.init = (app,options)->
-  views = ['./views']
+  views = ["#{app_root || '.'}/views"]
   _routes = []
   app.once 'ahero-initialized', =>
     done = _.after app.ApiHero.loadedModules.length, =>
@@ -12,15 +12,17 @@ module.exports.init = (app,options)->
       console.log "views: #{views}"
     _routeManager = RouteManager.getInstance().on 'initialized', (routes)=>
       _routes = routes
+      console.log "initialized: #{routes}"
       _.each _routes, (route)=>
-        (require "#{path.join process.cwd(), route.route_file}").init app
+        console.log "intializing route #{JSON.stringify route, null, 2}"
+        (require "#{path.join  (app_root || process.cwd()), route.route_file}").init app
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         if (route = _routeManager.getRoute op.name)?.length
           _routeManager.createRoute route[0], (e)->
             return console.log e if e?
             setTimeout (=>
-              (require "#{path.join process.cwd(), route[0].route_file}").init app
+              (require "#{path.join (app_root || process.cwd()), route[0].route_file}").init app
             ), 100
       .addSyncHandler 'route', 'removed', (op)=>
         fs.unlink "#{op.name}.js", (e)=>
