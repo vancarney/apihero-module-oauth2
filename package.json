@@ -18,16 +18,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "github.com/vancarney/rikki-tikki.git"
+    "url": "github.com/vancarney/apihero-module-jade-router.git"
   },
   "dependencies": {
     "lodash": "3.6.0",
     "jade":"^1.11.0",
-    "fs-extra":"^0.20.1",
-    "jadebars":"^0.5.1",
-    "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero",
-    "apihero-ui": "git+https://github.com/vancarney/backbone-ui#apihero-ui",
-    "loopback-connector-apihero-mongodb":"git+https://github.com/vancarney/loopback-connector-apihero-mongodb.git"
+    "fs-extra":"^0.20.1"
   },
   "devDependencies": {
     "coffee-script": ">=1.9.1",
@@ -37,9 +33,10 @@
     "docco": ">=0.6.2",
     "supertest": ">=1.0.1",
     "loopback-testing": "1.1.0",
-    "loopback-connector": "^2.2.1"
+    "loopback-connector": "^2.2.1",
+    "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero"
   },
-  "homepage": "http://vancarney.github.io/rikki-tikki",
+  "homepage": "https://github.com/vancarney/apihero-module-jade-router",
   "scripts": {
     "test": "cake test"
   }

@@ -1,7 +1,6 @@
 fs = require 'fs-extra'
 path = require 'path'
 {_} = require 'lodash'
-ApiHero = require 'api-hero'
 class RouteItem
   constructor:(@route_item)->
   save:(callback)->
