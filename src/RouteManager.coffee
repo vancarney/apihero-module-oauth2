@@ -49,6 +49,8 @@ class RouteManager extends EventEmitter
           throw new Error e
           return false
         if stat?.isDirectory()
+          # skips folders prepended with `_`
+          continue if path.basename(file).match /^_+/
           # # walks this directory and adds results to array
           paths.push @getpaths "./#{file}"
         else
