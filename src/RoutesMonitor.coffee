@@ -27,12 +27,6 @@ class RoutesMonitor extends AbstractMonitor
         catch e
           # adds new item reference to list
           return {name:v.route_file}
-        # try
-          # # console.log "./views/#{v.template_file}.#{v.file_type}"
-          # (stats = fs.statSync "./views/#{v.template_file}.#{v.file_type}")
-        # catch e
-          # console.log "removing: #{v.template_file}"
-          # @__collection.removeItemAt @getNames().indexOf v.template_file
         return null
       del = _.filter @getCollection(), (v)=>
         _.pluck( routes, 'route_file').indexOf( v.route_file ) is -1

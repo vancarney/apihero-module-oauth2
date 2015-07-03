@@ -4,11 +4,16 @@ _       = require 'lodash'
 
 module.exports.init = (app,options)->
   views = ['./views']
+  _routes = []
   app.once 'ahero-initialized', =>
     done = _.after app.ApiHero.loadedModules.length, =>
       app.set 'view engine', 'jade'
       app.set 'views', views
-    _routeManager = RouteManager.getInstance().on 'initialized', =>
+      console.log "views: #{views}"
+    _routeManager = RouteManager.getInstance().on 'initialized', (routes)=>
+      _routes = routes
+      _.each _routes, (route)=>
+        (require "#{path.join process.cwd(), route.route_file}").init app
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         if (route = _routeManager.getRoute op.name)?.length
@@ -20,6 +25,7 @@ module.exports.init = (app,options)->
       .addSyncHandler 'route', 'removed', (op)=>
         fs.unlink "#{op.name}.js", (e)=>
           console.log e if e?
+    # call done if no modules need loading
     return done() unless app.ApiHero.loadedModules.length
     _.each app.ApiHero.loadedModules, (name)=>
       done() unless (module = require name).hasOwnProperty 'paths' and module.paths.length > 1

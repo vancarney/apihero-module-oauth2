@@ -9,28 +9,23 @@ class RouteManager extends EventEmitter
   constructor:->
     fs.ensureDir './views', =>
       fs.ensureDir './routes', =>
-        @load (e)=>
+        @load (e, routes)=>
           return if e?
-          done = _.after @routes.length, => 
-            @emit 'initialized', @routes
-          _.each @routes, (route)=>
-            @createRoute route, done
+          @routes = routes
+          @emit 'initialized', @routes
   getRoute:(route)->
     _.where @routes, route_file: route
   createRoute:(routing, callback)->
     (new RouteItem routing).save callback
-      
   destroyRoute:(route, callback)->
   listRoutes:->
     @routes
   load:(callback)->
     try
-      @routes = @getpaths './views'
+      _routes = @getpaths './views'
     catch e
       return callback? e
-    # for route in @routes
-      # console.log "#{route.name}: #{route.route_file}"
-    callback? null, @routes
+    callback? null, _routes
   formatRoute:(path)->
     path
     # handles index as base path
