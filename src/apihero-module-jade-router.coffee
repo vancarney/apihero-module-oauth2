@@ -9,7 +9,6 @@ module.exports.init = (app,options)->
       app.set 'view engine', 'jade'
       app.set 'views', views
     _routeManager = RouteManager.getInstance().on 'initialized', =>
-      console.log 'initialized'
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         if (route = _routeManager.getRoute op.name)?.length
@@ -26,7 +25,7 @@ module.exports.init = (app,options)->
       done() unless (module = require name).hasOwnProperty 'paths' and module.paths.length > 1
       for path in module.paths
         views.push path if (path.match /\.jade+$/)?
-      views = _.flatten views
+      views = _.uniq _.flatten views
       done() 
 RouteManager  = require './RouteManager'
 RoutesMonitor = require './RoutesMonitor'

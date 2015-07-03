@@ -9,6 +9,7 @@
   ],
   "version": "0.0.1-alpha",
   "main":"./index.js",
+  "files":["./assets/layouts", "./assets/mixins"],
   "licenses": [
     {
       "type": "MIT",

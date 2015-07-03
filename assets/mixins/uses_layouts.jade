@@ -1,0 +1,6 @@
+if locals.isXHR
+  extends ../layouts/xhr-layout
+  append yield
+else
+  extends ../layouts/layout
+  append yield
