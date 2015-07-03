@@ -20,10 +20,8 @@ class RoutesMonitor extends AbstractMonitor
         if 0 <= (idx = @getNames().indexOf value.name)
           ex.push value
       @__collection.addAll list if (list = _.difference list, ex).length
-      console.log list
       callback? e, list
   startPolling:->
-    console.log 'startPolling'
     @__iVal ?= fs.watch @__path, (event, filename) =>
       try
         RouteManager.getInstance().load()

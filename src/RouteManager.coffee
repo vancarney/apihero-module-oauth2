@@ -1,6 +1,7 @@
 fs  = require 'fs-extra'
 {_} = require 'lodash'
 path = require 'path'
+RouteItem = require './RouteItem'
 {EventEmitter} = require 'events'
 class RouteManager extends EventEmitter
   'use strict'
@@ -10,9 +11,12 @@ class RouteManager extends EventEmitter
     @load (e)=>
       return if e?
       @emit 'initialized', @routes
-  getRoute:->
-  createRoute:->
-  destroyRoute:->
+  getRoute:(route)->
+    _.where @routes, route_file: route
+  createRoute:(routing, callback)->
+    (new RouteItem routing).save callback
+      
+  destroyRoute:(route, callback)->
   listRoutes:->
     @routes
   load:(callback)->
@@ -23,7 +27,7 @@ class RouteManager extends EventEmitter
     # for route in @routes
       # console.log "#{route.name}: #{route.route_file}"
     callback? null, @routes
-  createRoute:(path)->
+  formatRoute:(path)->
     path
     # handles index as base path
     .replace /index/, '/'
@@ -57,7 +61,7 @@ class RouteManager extends EventEmitter
             query_method: if (itemName is 'index') then 'find' else 'findOne'
             route_file: "./#{path.join 'routes', dir.replace(/\/?views+/,''), itemName}"
             template_file: path.join dir.replace(/\/?views+/,''), itemName
-            route: @createRoute path.join dir.replace(/\/?views+/,''), itemName
+            route: @formatRoute path.join dir.replace(/\/?views+/,''), itemName
           paths.push routeItem
     _.flatten paths
   @getInstance: ->

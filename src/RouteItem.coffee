@@ -1,11 +1,12 @@
 fs = require 'fs'
 {_} = require 'lodash'
-apihero = require 'api-hero'
+ApiHero = require 'api-hero'
 class RouteItem
   constructor:(@route_item)->
   save:(callback)->
-    fs.write @route_item.route_path, @template( @route_item ), (e)=>
-      callback? (e?)
+    # console.log @route_item
+    fs.writeFile "#{@route_item.route_file}.js", @template(@route_item), {flag:'wx'}, (e)=>
+      callback?.apply @, arguments
 RouteItem.__template__ = """
 /**
  * <%= name %>.js
@@ -13,15 +14,18 @@ RouteItem.__template__ = """
  */
 var _app_ref;
 var render = function(res, model) {
- res.render( module.exports.templatePath ); 
+  console.log(module.exports.templatePath);
+ res.render( module.exports.templatePath, model, function(e,html) {
+   res.send(html);
+ }); 
 };
 
 var <%= name %>Handler = function(req, res, next) {
   var funcName = module.exports.queryMethod || 'find';
   var collectionName = ((name = module.exports.collectionName) == "") ? null : name;
-  
-  if (collectionName == null) {
-    render(res, {});
+
+  if (collectionName == null || _app_ref.models[collectionName] == void 0) {
+    return render(res, {});
   }
   
   _app_ref.models[collectionName][funcName]( module.exports.query, function(e,record) {
@@ -36,7 +40,7 @@ var <%= name %>Handler = function(req, res, next) {
 
 module.exports.init = function(app) {
   _app_ref = app;
-  app.get("<%= route %>", <%= name %>Handler);
+  app.get("/<%= route %>", <%= name %>Handler);
 };
 
 module.exports.collectionName = "<%= route %>";
@@ -45,3 +49,4 @@ module.exports.templatePath = "<%= template_file %>";
 module.exports.query = {};
 """
 RouteItem::template = _.template RouteItem.__template__
+module.exports = RouteItem
