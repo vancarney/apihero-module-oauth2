@@ -3,11 +3,12 @@ path    = require 'path'
 _       = require 'lodash'
 
 module.exports.init = (app,options)->
-  views = './views'
+  views = ['./views']
   app.once 'ahero-initialized', =>
-    done = _.after app.ApiHero.loadedModules.length, (views)=>
+    done = _.after app.ApiHero.loadedModules.length, =>
+      console.log views
       app.set 'view engine', 'jade'
-      app.set 'views', './views'
+      app.set 'views', views
       _routeManager = RouteManager.getInstance()
     app.ApiHero.createSyncInstance 'route', RoutesMonitor
     .addSyncHandler 'route', 'added', (op)=>
@@ -20,9 +21,10 @@ module.exports.init = (app,options)->
           ), 100
     return done() unless app.ApiHero.loadedModules.length
     _.each app.ApiHero.loadedModules, (name)=>
-      done views unless (module = require name).hasOwnProperty 'paths' and module.paths.length > 1
+      done() unless (module = require name).hasOwnProperty 'paths' and module.paths.length > 1
       for path in module.paths
-        views.concat path if (path.match /\.jade+$/)?
-      done views
+        views.push path if (path.match /\.jade+$/)?
+      views = _.flatten views
+      done() 
 RouteManager  = require './RouteManager'
 RoutesMonitor = require './RoutesMonitor'
