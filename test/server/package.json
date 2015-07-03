@@ -18,6 +18,7 @@
     "loopback-connector-apihero-mongodb":"git+https://github.com/vancarney/loopback-connector-apihero-mongodb.git",
     "loopback-connector-postgresql": "^2.1.0",
     "loopback-connector-mysql": "^2.1.1",
+    "api-hero":"git+https://github.com/vancarney/rikki-tikki#api-hero",
     "serve-favicon": "^2.0.1"
   },
   "optionalDependencies": {
