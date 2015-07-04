@@ -6,8 +6,8 @@ class RouteItem
   save:(callback)->
     fs.ensureDir path.dirname( p = "#{@route_item.route_file}.js"), (e)=>
       return callback.apply @, arguments if e?
-      fs.writeFile p, @template(@route_item), {flag:'wx'}, (e)=>
-        callback?.apply @, arguments
+      fs.writeFile p, @template(@route_item), {flag:'wx+'}, (e)=>
+        # callback?.apply @, arguments
 RouteItem.__template__ = """
 /**
  * <%= name %>.js

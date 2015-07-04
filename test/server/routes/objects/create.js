@@ -35,5 +35,5 @@ module.exports.init = function(app) {
 
 module.exports.collectionName = "objects/create";
 module.exports.queryMethod = "findOne";
-module.exports.templatePath = "objects/create";
+module.exports.templatePath = "/objects/create";
 module.exports.query = {};

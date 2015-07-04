@@ -35,5 +35,5 @@ module.exports.init = function(app) {
 
 module.exports.collectionName = "s";
 module.exports.queryMethod = "find";
-module.exports.templatePath = "objects/index";
+module.exports.templatePath = "/objects/index";
 module.exports.query = {};

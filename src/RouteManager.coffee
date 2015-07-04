@@ -6,9 +6,11 @@ RouteItem = require './RouteItem'
 class RouteManager extends EventEmitter
   'use strict'
   routes:[]
+  _viewsDir: "#{app_root || '.'}#{_path.sep}views"
+  _routesDir: "#{app_root || '.'}#{_path.sep}routes"
   constructor:->
-    fs.ensureDir "#{app_root || '.'}/views", =>
-      fs.ensureDir "#{app_root || '.'}/routes", =>
+    fs.ensureDir @_viewsDir, =>
+      fs.ensureDir @_routesDir, =>
         @load (e, routes)=>
           return if e?
           @routes = routes
@@ -22,13 +24,13 @@ class RouteManager extends EventEmitter
     @routes
   load:(callback)->
     try
-      _routes = @getpaths "#{app_root || '.'}/views"
+      _routes = @getpaths @_viewsDir
     catch e
       return callback? e
-    console.log _routes
+    # console.log _routes
     callback? null, _routes
-  formatRoute:(path)->
-    path
+  formatRoute:(fname)->
+    fname
     # handles index as base path
     .replace /index/, '/'
     # handles all sub-docs as being views on an item
@@ -39,10 +41,8 @@ class RouteManager extends EventEmitter
     .replace /^([a-zA-Z0-9_])+\/+$/, '$1'
   getpaths:(dir)->
     paths = []
-    console.log fs.readdirSync dir
     if (list = fs.readdirSync dir).length
       for name in list
-        console.log name
         continue if (name.match /^\./)?
         file = _path.join dir, name
         try
@@ -55,18 +55,19 @@ class RouteManager extends EventEmitter
           # skips folders prepended with `_`
           continue if _path.basename(file).match /^_+/
           # # walks this directory and adds results to array
-          paths.push @getpaths "#{app_root || '.'}#{_path.sep}#{file}"
+          paths.push @getpaths file
         else
           itemName = name.split('.')[0]
           # we only handle Jade files
           continue unless (name.match /^[^_]+[a-zA-Z0-9_\.]+\.jade+$/)?
+          p = new RegExp @_viewsDir.replace( /\//,'\/')
           routeItem =
             name: itemName
             file_type: 'jade'
             query_method: if (itemName is 'index') then 'find' else 'findOne'
-            route_file: "#{app_root || '.'}/#{_path.join 'routes', dir.replace(/\/?views+/,''), itemName}"
-            template_file: "#{app_root || '.'}/#{_path.join dir.replace(/\/?views+/,''), itemName}"
-            route: @formatRoute _path.join dir.replace(/\/?views+/,''), itemName
+            route_file: "./#{_path.join @_routesDir, _path.basename(dir).replace(/views+/,''), itemName}"
+            template_file: _path.join dir.split(/views+/).pop(), itemName
+            route: @formatRoute _path.join _path.basename(dir).replace(/views+/,''), itemName
           paths.push routeItem
     _.flatten paths
   @getInstance: ->
