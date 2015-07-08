@@ -18,6 +18,8 @@ module.exports.init = (app,options)->
           setTimeout (=>
             (require "#{route.route_file}").init app
           ), 1300
+      _.each routes, (route)=>
+        (require "#{route.route_file}").init app
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         _routeManager.load (e,r)=>

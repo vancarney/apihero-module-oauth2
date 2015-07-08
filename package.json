@@ -21,18 +21,18 @@
     "url": "github.com/vancarney/apihero-module-jade-router.git"
   },
   "dependencies": {
-    "lodash": "3.6.0",
+    "lodash": "^3.6.0",
     "jade":"^1.11.0",
     "fs-extra":"^0.20.1"
   },
   "devDependencies": {
-    "coffee-script": ">=1.9.1",
-    "express": "4.11.1 ",
-    "mocha": ">=1.12.0",
-    "chai": ">=1.7.2",
-    "docco": ">=0.6.2",
-    "supertest": ">=1.0.1",
-    "loopback-testing": "1.1.0",
+    "coffee-script": "^1.9.1",
+    "express": "^4.11.1 ",
+    "mocha": "^2.2.5",
+    "chai": "^3.0.0",
+    "docco": "^0.6.2",
+    "supertest": "^1.0.1",
+    "loopback-testing": "^1.1.0",
     "loopback-connector": "^2.2.1",
     "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero"
   },

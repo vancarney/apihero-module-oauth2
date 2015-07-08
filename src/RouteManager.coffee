@@ -65,9 +65,10 @@ class RouteManager extends EventEmitter
             name: itemName
             file_type: 'jade'
             query_method: if (itemName is 'index') then 'find' else 'findOne'
-            route_file: "./#{_path.join @_routesDir, _path.basename(dir).replace(/views+/,''), itemName}"
+            route_file: "#{_path.join @_routesDir, _path.basename(dir).replace(/views+/,''), itemName}"
             template_file: _path.join dir.split(/views+/).pop(), itemName
             route: @formatRoute _path.join _path.basename(dir).replace(/views+/,''), itemName
+          routeItem.route_file = "./#{routeItem.route_file}" unless routeItem.route_file.match /^\.?\/+/
           paths.push routeItem
     _.flatten paths
   @getInstance: ->

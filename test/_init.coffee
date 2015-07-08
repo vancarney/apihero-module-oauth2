@@ -5,7 +5,7 @@ path            = require 'path'
 global._        = _
 global.should   = should
 global.expect   = expect
-global.app_root = './test/server'
+global.app_root = './server'
 lt        = require 'loopback-testing'
 server    = require './server/server/server'
 
