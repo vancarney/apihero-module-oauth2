@@ -3,7 +3,7 @@ path    = require 'path'
 _       = require 'lodash'
 
 module.exports.init = (app,options)->
-  views = ["#{app_root || '.'}/views"]
+  views = ["#{path.dirname __dirname}/assets", "#{app_root || process.cwd()}/views"]
   _routes = []
   app.once 'ahero-initialized', =>
     done = _.after app.ApiHero.loadedModules.length, =>
@@ -18,8 +18,6 @@ module.exports.init = (app,options)->
           setTimeout (=>
             (require "#{route.route_file}").init app
           ), 1300
-      # _.each _routes, (route)=>
-        # generateRoute route
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         _routeManager.load (e,r)=>
