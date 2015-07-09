@@ -1,0 +1,8 @@
+{
+  "name": "edit",
+  "file_type": "jade",
+  "query_method": "findOne",
+  "route_file": "/Users/van/Documents/workspace/apihero-module-jade-router/test/server/routes/objects/edit",
+  "template_file": "/objects/edit",
+  "route": "objects/:id/edit"
+}

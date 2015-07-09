@@ -12,14 +12,14 @@ module.exports.init = (app,options)->
       console.log "views: #{views}"
     _routeManager = RouteManager.getInstance().on 'initialized', (routes)=>
       _routes = routes
-      generateRoute = (route)=>
+      generateRoute = (route, callback)=>
         _routeManager.createRoute route, (e)->
           return console.log e if e?
           setTimeout (=>
             (require "#{route.route_file}").init app
           ), 1300
       _.each routes, (route)=>
-        (require "#{route.route_file}").init app
+        generateRoute route
       app.ApiHero.createSyncInstance 'route', RoutesMonitor
       .addSyncHandler 'route', 'added', (op)=>
         _routeManager.load (e,r)=>

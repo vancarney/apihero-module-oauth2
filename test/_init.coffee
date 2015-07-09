@@ -5,7 +5,7 @@ path            = require 'path'
 global._        = _
 global.should   = should
 global.expect   = expect
-global.app_root = './server'
+global.app_root = path.join __dirname, 'server'
 lt        = require 'loopback-testing'
 server    = require './server/server/server'
 
@@ -14,12 +14,12 @@ describe 'init app', ->
   it 'should emit a `initialized` event', (done)=>
     server.once 'ahero-initialized', =>
       global.app = server
+      expect(app.ApiHero).to.exist
       # global.api_options  = require '../lib/classes/config/APIOptions'
       done.apply @, arguments
-  it 'should have a reference set on Loopback', =>
-    expect(app.ApiHero).to.exist
+      
     
-  it 'should create index route', (done)=>
+  it 'should have created index route', (done)=>
     setTimeout (=>
       fs.stat "#{app_root}/routes/index.js", done
     ), 1200
@@ -43,3 +43,5 @@ describe 'init app', ->
   after (done)=>
     fs.unlink "#{app_root}/routes/index.js", =>
       fs.unlink "#{app_root}/routes/testing.js", => done()
+    fs.unlink "#{app_root}/routes/index.json", =>
+      fs.unlink "#{app_root}/routes/testing.json", => done()

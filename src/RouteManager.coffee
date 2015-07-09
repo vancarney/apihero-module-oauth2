@@ -18,7 +18,8 @@ class RouteManager extends EventEmitter
   getRoute:(route)->
     _.where @routes, route_file: route
   createRoute:(routing, callback)->
-    (new RouteItem routing).save callback
+    (new RouteItem routing).save => 
+      callback?.apply @, arguments
   destroyRoute:(route, callback)->
   listRoutes:->
     @routes

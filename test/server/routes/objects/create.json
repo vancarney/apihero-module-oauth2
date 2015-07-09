@@ -1,0 +1,8 @@
+{
+  "name": "create",
+  "file_type": "jade",
+  "query_method": "findOne",
+  "route_file": "/Users/van/Documents/workspace/apihero-module-jade-router/test/server/routes/objects/create",
+  "template_file": "/objects/create",
+  "route": "objects/create"
+}
