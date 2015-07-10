@@ -29,10 +29,10 @@ var render = function(res, model) {
 var <%= name %>Handler = function(req, res, next) {
   var funcName = config.queryMethod || 'find';
   var collectionName = ((name = config.collectionName) == "") ? null : name;
-
-  if (collectionName == null || _app_ref.models[collectionName] == void 0) {
-    return render(res, {});
-  }
+  var model = {meta:[], results:[]};
+  
+  if (collectionName == null && _app_ref.models.hasOwnProperty(collectionName) == false )
+    return render(res, model);
   
   _app_ref.models[collectionName][funcName]( config.query, function(e,record) {
     if (e != null) {
@@ -40,6 +40,7 @@ var <%= name %>Handler = function(req, res, next) {
       return res.sendStatus(500);
     }
     
+    model.results = results;
     render(res,record);
   });
 };
