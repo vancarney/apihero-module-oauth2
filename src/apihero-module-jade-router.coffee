@@ -14,7 +14,7 @@ module.exports.init = (app,options)->
       _routes = routes
       generateRoute = (route, callback)=>
         _routeManager.createRoute route, (e)->
-          return console.log e if e?
+          return console.log e if e? and e.code != 'EEXIST'
           setTimeout (=>
             (require "#{route.route_file}").init app
           ), 1300
