@@ -20,7 +20,8 @@ RouteItem::template = _.template """
 var _app_ref;
 var config = require('./<%= name %>.json');
 var render = function(res, model) {
-  res.render( config.templatePath, model, function(e,html) {
+  res.render( config.template_file, model, function(e,html) {
+    if (e !== null) console.log(e);
     res.send(html);
   }); 
 };
@@ -45,7 +46,7 @@ var <%= name %>Handler = function(req, res, next) {
 
 module.exports.init = function(app) {
   _app_ref = app;
-  app.get("/<%= route %>", <%= name %>Handler);
+  app.get(config.route, <%= name %>Handler);
 };
 """
 module.exports = RouteItem
