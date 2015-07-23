@@ -1,15 +1,23 @@
 fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
+modRewrite = 'connect-modrewrite'
 
 module.exports.init = (app,options)->
   views = ["#{path.dirname __dirname}/assets", "#{app_root || process.cwd()}/views"]
+  rules_path =  "#{app_root || process.cwd()}/routes/rewrite-rules.json"
   _routes = []
   app.once 'ahero-initialized', =>
     done = _.after app.ApiHero.loadedModules.length, =>
       app.set 'view engine', 'jade'
       app.set 'views', views
-      console.log "views: #{views}"
+      try
+        rules = require rules_path
+      catch e
+        fs.writeFileSync rules_path, 'module.exports = [];'
+        rules = []
+      app.use modRewrite rules
+      # console.log "views: #{views}"
     _routeManager = RouteManager.getInstance().on 'initialized', (routes)=>
       _routes = routes
       generateRoute = (route, callback)=>
