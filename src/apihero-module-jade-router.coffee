@@ -1,7 +1,7 @@
 fs      = require 'fs'
 path    = require 'path'
 _       = require 'lodash'
-modRewrite = 'connect-modrewrite'
+modRewrite = require 'connect-modrewrite'
 
 module.exports.init = (app,options)->
   views = ["#{path.dirname __dirname}/assets", "#{app_root || process.cwd()}/views"]
