@@ -59,6 +59,15 @@ var <%= name %>Handler = function(req, res, next) {
       var elName  = q.hasOwnProperty('name') ? q.name : 'results';
       var colName = q.hasOwnProperty('collectionName') ? q.collectionName : collectionName;
       var funName = q.hasOwnProperty('queryMethod') ? q.queryMethod : (funcName || 'find');
+      
+      if (q.query.hasOwnProperty('arguments')) {
+         for (arg in q.query.arguments) {
+          if ((param = q.query.arguments[arg].match(/^(\:|\?)+([a-zA-Z0-9\-_]{1,})+$/)) != null) {
+            q.query.arguments[arg] = req[(param[1] === ':' ? 'params' : 'query')][''+param[2]];
+          }
+        }
+      }
+      
       execQuery(colName, funName, q.query, function(e, res) {
         o = {};
         o[elName] = res;
@@ -71,6 +80,15 @@ var <%= name %>Handler = function(req, res, next) {
     var elName  = q.hasOwnProperty('name') ? q.name : 'results';
     var colName = q.hasOwnProperty('collectionName') ? q.collectionName : collectionName;
     var funName = q.hasOwnProperty('queryMethod') ? q.queryMethod : (funcName || 'find');
+    
+    if (q.query.hasOwnProperty('arguments')) {
+       for (arg in q.query.arguments) {
+        if ((param = q.query.arguments[arg].match(/^(\:|\?)+([a-zA-Z0-9\-_]{1,})+$/)) != null) {
+          q.query.arguments[arg] = req[(param[1] === ':' ? 'params' : 'query')][''+param[2]];
+        }
+      }
+    }
+    
     execQuery(colName, funName, q.query, function(e, res) {
       o = {};
       o['elName'] = res;
