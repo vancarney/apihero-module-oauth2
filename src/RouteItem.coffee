@@ -82,7 +82,8 @@ var <%= name %>Handler = function(req, res, next) {
 
 module.exports.init = function(app) {
   _app_ref = app;
-  app.get(config.route, <%= name %>Handler);
+  var route = (s = config.route.split('rx:')).length > 1 ? new RegExp(s.pop()) : config.route;
+  app.get(route, <%= name %>Handler);
 };
 """
 module.exports = RouteItem
