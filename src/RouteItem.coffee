@@ -95,7 +95,7 @@ var <%= name %>Handler = function(req, res, next) {
         continue;
         
       // tests for argument values that match `:` or `?`
-      if ((param = c_query.query.arguments[arg].match(/^(\:|\?)+([a-zA-Z0-9\-_]{1,})+$/)) != null) {
+      if ((param = c_query.query.arguments[arg].match(/^(\\:|\\?)+([a-zA-Z0-9\-_]{1,})+$/)) != null) {
         // if value matched `:`, that is a ROUTE PARAMETER such as /:id and is applied against request.params
         // if value matched `?`, that is a REQUEST QUERY PARAMETER such as ?param=value and is applied against request.query
         c_query.query.arguments[arg] = req[(param[1] === ':' ? 'params' : 'query')][''+param[2]];
