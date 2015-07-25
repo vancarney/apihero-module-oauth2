@@ -147,14 +147,14 @@ var <%= name %>Handler = function(req, res, next) {
   else {
     
     // is a single query configuration -- process directly
-    processQuery(_.cloneDeep(config.query), function(e, res) {
+    processQuery(_.cloneDeep(config.query), function(e, resultset) {
         if (e != null) {
           console.log(e);
           return res.sendStatus(500);
         }
 
         // invokes render with result set
-        render(res, resultset);
+        render(res, _.extend(model, resultset));
       });
   }
 
