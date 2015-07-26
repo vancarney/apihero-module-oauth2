@@ -22,7 +22,7 @@ var _ = require('lodash');
 var _app_ref;
 var config = require('./<%= name %>.json');
 var render = function(res, model) {
-  res.render( config.template_file, model, function(e,html) {
+  res.render( config.template_file, JSON.parse(JSON.stringify(model)), function(e,html) {
     if (e !== null) console.log(e);
     res.send(html);
   }); 
