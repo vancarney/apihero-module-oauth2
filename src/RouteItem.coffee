@@ -221,7 +221,6 @@ var <%= name %>Handler = function(req, res, next) {
           c_query.operations = [c_query.operations];
           
         var done = _.after(c_query.operations.length, function() {
-          console.log(o);
           callback(null, o); });
         _.each(c_query.operations, function(op) {
           operateOnResults(op, o[elName], done);
