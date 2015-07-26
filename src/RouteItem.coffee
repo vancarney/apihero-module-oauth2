@@ -63,102 +63,6 @@ var <%= name %>Handler = function(req, res, next) {
     return _app_ref.models[colName][funName](q, cB);
   };
 
-  var operateOnResults = function(op, data, callback) {
-    if (callback == null || typeof callback != 'function')
-      throw "callback required";
-
-    // tests for Object as op argument
-    if (op == null || typeof op != 'object')
-      // returns on callback if operation is invalid
-      return callback("operation object was invalid");
-
-    // defines missing and fields Arrays
-    var missing, fields = ['fieldName', 'opType', 'dataType', 'call'];
-
-    // tests to ensure all required fields exist in object
-    if (( missing = _.difference(fields, _.keys(op)) ).length > 0)
-      // returns on callback if any field was missing
-      return callback("operation object was missing required parameter '" + missing[0] + "'");
-      
-    var doOp = function(op, record, callback) {
-      // console.log(arguments);
-      if (op.opType == 'append' && record.hasOwnProperty(op.fieldName))
-        return callback(null, record);
-        
-      // derives callee method based on `on` parameter or from `helpers` object
-      var _callee = (op.call.hasOwnProperty('on')) ? record[op.call.on] || null : global.helpers || {};
-      
-      // returns with callback if `on` parameter is defined and _callee unset
-      if (op.call.hasOwnProperty('on') && _callee == null)
-        return callback(null, record);
-      
-      // resets _callee with value of function if _callee is function
-      if (typeof  _callee == 'function')
-         _callee = _callee();
-      
-      // tests _callee for method reference
-      if (_callee.hasOwnProperty(op.call.method)) {
-        
-        // tests if method reference is a function
-        if (typeof _callee[op.call.method] == 'function') {
-          
-          // tests if call settings has a `with` parameter defined
-          if (op.call.hasOwnProperty('with')) {
-            
-            // obtains Array of values from record values
-            _with = _.map(op.call['with'], function(col) { return record[col]; });
-            
-            // invokes method with arguments passed from  values in `with`
-            record.__data[op.fieldName] = _callee[op.call.method].apply( _callee, _with);
-            
-            // returns with callback
-            return callback(null, record);
-          }
-          
-          // invokes mthod directly with no arguments
-          record.__data[op.fieldName] = _callee[op.call.method].call( _callee );
-          
-          // returns with callback
-          return callback(null, record);
-        }
-
-        // sets directly with value of method parameter
-        record.__data[op.fieldName] = _callee[op.call.method];
-        
-        // returns with callback
-        return callback(null, record);
-      }
-      
-      // attempts to set with default value
-      if (op.hasOwnProperty('default')) {
-        record.__data[op.fieldName] = op['default'];
-        
-        // returns with callback
-        return callback(null, record);
-      } 
-      
-      // sets field to null as fallback
-      record.__data[op.fieldName] = null;
-      
-      // returns with callback
-      return callback(null, record);
-    };
-
-    // tests if dataset is array
-    if (_.isArray(data)) {
-      
-      // handles callbacks  to emit only after completed
-      var done = _.after(data.length, callback);
-      _.each(data, function(record) {
-        // invokes doOp for each record
-        doOp(op, record, done);
-      });
-    } else {
-      // invokes doOp for result
-      doOp(op,data, function() { callback(null); });
-    }
-
-  };
 
   // processes query from Configuration and Request Query and Params Object
   var processQuery = function(c_query, callback) {
@@ -213,24 +117,9 @@ var <%= name %>Handler = function(req, res, next) {
 
       // applies defined Result Element Name withj results
       o[elName] = res;
-      
-      if (c_query.hasOwnProperty('operations')) {
-        // tests if operations parameter is of type Array
-        if (!_.isArray(c_query.operations))
-          // transforms operations parameter fr om Object to Array
-          c_query.operations = [c_query.operations];
-          
-        var done = _.after(c_query.operations.length, function() {
-          callback(null, o); });
-        _.each(c_query.operations, function(op) {
-          operateOnResults(op, o[elName], done);
-        });
-      } 
-      
-      else {
-        // passes formatted results to callback
-        callback(null, o);
-      }
+
+      // passes formatted results to callback
+      callback(null, o);
     };
 
     // invokes Query Execution Method with Collection, Operation Method and Query
