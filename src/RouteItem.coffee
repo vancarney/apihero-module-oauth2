@@ -29,133 +29,217 @@ var render = function(res, model) {
 };
 
 var <%= name %>Handler = function(req, res, next) {
-  
   // attempts to determine name for `Query Method` defaults to 'find'
   var funcName = config.queryMethod || 'find';
-  
+
   // attempts to determine `Collection Name` defaults to config name for route
-  var collectionName = ((name = config.collectionName) == "") ? null : name;
-  
+  var collectionName = (( name = config.collectionName) == "") ? null : name;
+
   // placeholds the result object
-  var model = {meta:[]};
-  
+  var model = {
+    meta : []
+  };
+
   // tests for Collection Name
-  if (collectionName == null && _app_ref.models.hasOwnProperty(collectionName) == false )
+  if (collectionName == null && _app_ref.models.hasOwnProperty(collectionName) == false)
     // renders page and returns if no Collection Name was defined
     return render(res, model);
-  
+
   // performs Query Execution
   var execQuery = function(colName, funName, q, cB) {
-    
+
     // tests for existance of query arguments defintion
     if (q.hasOwnProperty('arguments')) {
       // captures values of argument properties
       var args = _.values(q.arguments);
       // pushes callback into argument values array
       args.push(cB);
-      
+
       // applies arguments array with callback upon Collection Operation
-      return _app_ref.models[colName][funName].apply( this, args );
+      return _app_ref.models[colName][funName].apply(this, args);
     }
 
     // invokes Collection Operation with Query and Callback only
-    return _app_ref.models[colName][funName]( q, cB);
+    return _app_ref.models[colName][funName](q, cB);
   };
-  
+
+  var operateOnResults = function(op, data, callback) {
+    if (callback == null || typeof callback != 'function')
+      throw "callback required";
+
+    // tests for Object as op argument
+    if (op == null || typeof op != 'object')
+      // returns on callback if operation is invalid
+      return callback("operation object was invalid");
+
+    // defines missing and fields Arrays
+    var missing, fields = ['fieldName', 'opType', 'dataType', 'call'];
+
+    // tests to ensure all required fields exist in object
+    if (( missing = _.difference(fields, _.keys(op)) ).length > 0)
+      // returns on callback if any field was missing
+      return callback("operation object was missing required parameter '" + missing[0] + "'");
+      
+    var doOp = function(op, record, callback) {
+      // console.log(arguments);
+      if (op.opType == 'append' && record.hasOwnProperty(op.fieldName))
+        return callback(null, record);
+
+      var _callee = (op.call.hasOwnProperty('on')) ? record[op.call.on] || null : global.helpers || {};
+      
+      if (op.call.hasOwnProperty('on') && _callee == null)
+        return callback(null, record);
+        
+      if (typeof  _callee == 'function')
+         _callee = _callee();
+         
+      if (_callee.hasOwnProperty(op.call.method)) {
+        if (typeof _callee[op.call.method] == 'function') {
+          if (op.call.hasOwnProperty('with')) {
+            _with = _.map(op.call['with'],function(col) { return record[col]; });
+            record.__data[op.fieldName] = _callee[op.call.method].apply( _callee,  _with);
+            return callback(null, record);
+          }
+          record.__data[op.fieldName] = _callee[op.call.method].call( _callee );
+          return callback(null, record);
+        }
+
+        record.__data[op.fieldName] = _callee[op.call.method];
+        return callback(null, record);
+      }
+      
+      if (op.hasOwnProperty('default')) {
+        record.__data[op.fieldName] = op['default'];
+        return callback(null, record);
+      } 
+      //- sets field to null as fallback
+      record.__data[op.fieldName] = null;
+      return callback(null, record);
+    };
+
+
+    if (_.isArray(data)) {
+      var done = _.after(data.length, callback);
+      _.each(data, function(record) {
+        record.foo = 'bar';
+        doOp(op, record, done);
+      });
+    } else {
+      doOp(op,data, function() { callback(null); });
+    }
+
+  };
+
   // processes query from Configuration and Request Query and Params Object
   var processQuery = function(c_query, callback) {
-    
+
     // holds `name` of Response Object Element
-    var elName  = c_query.hasOwnProperty('name') ? c_query.name : 'results';
-    
+    var elName = c_query.hasOwnProperty('name') ? c_query.name : 'results';
+
     // holds `name` of Collection to perform Operations against
     var colName = c_query.hasOwnProperty('collectionName') ? c_query.collectionName : collectionName;
-    
+
     // holds `name` of Operation to perform against Collection
     var funName = c_query.hasOwnProperty('queryMethod') ? c_query.queryMethod : (funcName || 'find');
-    
+
     // checks for Required Arguments property set on Query config
     if (c_query.query.hasOwnProperty('required') && _.isArray(c_query.query.required)) {
       // holds missing arguments that were required
       var missing;
       // checks for existance of all required arguments
-      if ((missing = _.difference(c_query.query.required, _.keys(req.query))).length > 0)
+      if (( missing = _.difference(c_query.query.required, _.keys(req.query))).length > 0)
         // returns user error if missing a required argument
-        return res.status(400).send("required argument '"+missing[0]+"' was missing from query params" );
+        return res.status(400).send("required argument '" + missing[0] + "' was missing from query params");
     }
-  
-  // tests for arguments element on Query Settings Object  
-  if (c_query.query.hasOwnProperty('arguments')) {
-    
-    // loops on each arguments defined
-    for (arg in c_query.query.arguments) {
-      
-      // skips unprocessable arguments
-      if (!c_query.query.arguments[arg])
-        continue;
-        
-      // tests for argument values that match `:` or `?`
-      if ((param = c_query.query.arguments[arg].match(/^(\\:|\\?)+([a-zA-Z0-9\-_]{1,})+$/)) != null) {
-        // if value matched `:`, that is a ROUTE PARAMETER such as /:id and is applied against request.params
-        // if value matched `?`, that is a REQUEST QUERY PARAMETER such as ?param=value and is applied against request.query
-        c_query.query.arguments[arg] = req[(param[1] === ':' ? 'params' : 'query')][''+param[2]];
+
+    // tests for arguments element on Query Settings Object
+    if (c_query.query.hasOwnProperty('arguments')) {
+
+      // loops on each arguments defined
+      for (arg in c_query.query.arguments) {
+
+        // skips unprocessable arguments
+        if (!c_query.query.arguments[arg])
+          continue;
+
+        // tests for argument values that match `:` or `?`
+        if (( param = c_query.query.arguments[arg].match(/^(\:|\?)+([a-zA-Z0-9-_]{1,})+$/)) != null) {
+          // if value matched `:`, that is a ROUTE PARAMETER such as /:id and is applied against request.params
+          // if value matched `?`, that is a REQUEST QUERY PARAMETER such as ?param=value and is applied against request.query
+          c_query.query.arguments[arg] = req[(param[1] === ':' ? 'params' : 'query')]['' + param[2]];
+        }
       }
     }
-  }
-  
-  // wraps passed calllback for negotiation
-  var cB = function(e,res) {
-    if (e != null) {
-      // invokes callback and returns in case of error
-      return callback(e);
-    }
-    
-    // placeholds results object
-    var o = {};
-    // applies defined Result Element Name withj results
-    o[elName] = res;
-    // passes formatted results to callback
-    callback(null, o);
-  };
-  
+
+    // wraps passed calllback for negotiation
+    var cB = function(e, res) {
+      if (e != null) {
+        // invokes callback and returns in case of error
+        return callback(e);
+      }
+
+      // placeholds results object
+      var o = {};
+
+      // applies defined Result Element Name withj results
+      o[elName] = res;
+      
+      if (c_query.hasOwnProperty('operations')) {
+        // tests if operations parameter is of type Array
+        if (!_.isArray(c_query.operations))
+          // transforms operations parameter fr om Object to Array
+          c_query.operations = [c_query.operations];
+          
+        var done = _.after(c_query.operations.length, function() {
+          console.log(o);
+          callback(null, o); });
+        _.each(c_query.operations, function(op) {
+          operateOnResults(op, o[elName], done);
+        });
+      } 
+      
+      else {
+        // passes formatted results to callback
+        callback(null, o);
+      }
+    };
+
     // invokes Query Execution Method with Collection, Operation Method and Query
     execQuery(colName, funName, c_query.query, cB);
   };
-  
+
   // tests if configured Query element is an `Array`
   if (_.isArray(config.query)) {
     // defines completion method
     var done = _.after(config.query.length, function(e, resultset) {
       if (e != null) {
-          console.log(e);
-          return res.sendStatus(500);
-        }
+        console.log(e);
+        return res.sendStatus(500);
+      }
       // invokes render with result set
       render(res, resultset);
     });
-    
+
     // loops on each configured query passed
     _.each(config.query, function(q) {
       // inokes Query Processing method
       processQuery(_.cloneDeep(q), function(e, res) {
-          // invokes done each iteration
-          done(e, _.extend(model, res));
+        // invokes done each iteration
+        done(e, _.extend(model, res));
       });
     });
-  }
-  
-  else {
-    
+  } else {
+
     // is a single query configuration -- process directly
     processQuery(_.cloneDeep(config.query), function(e, resultset) {
-        if (e != null) {
-          console.log(e);
-          return res.sendStatus(500);
-        }
+      if (e != null) {
+        console.log(e);
+        return res.sendStatus(500);
+      }
 
-        // invokes render with result set
-        render(res, _.extend(model, resultset));
-      });
+      // invokes render with result set
+      render(res, _.extend(model, resultset));
+    });
   }
 
 };
