@@ -9,8 +9,8 @@
   "version": "0.0.1-alpha",
   "main":"./index.js",
   "moduleConfig": {
-  	"assets":[],
-  	"templates":[],
+  	"assets":"./assets",
+  	"templates":"./templates",
   	"moduleOptions": {
   	}
   },

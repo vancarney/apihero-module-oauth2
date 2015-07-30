@@ -2,17 +2,5 @@
   "db": {
     "name": "db",
     "connector": "memory"
-  },
-  "mongo": {
-    "database": "test",
-    "name": "mongo",
-    "connector": "apihero-mongodb"
-  },
-  "mysql": {
-    "database": "rikki-tikki",
-    "username": "rt-test",
-    "password": "<%qI=dozA95W#(o",
-    "name": "mysql",
-    "connector": "mysql"
   }
 }
