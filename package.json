@@ -3,13 +3,18 @@
   "name": "apihero-module-stub",
   "description": "Empty Repo for bootstraping new Module Projects",
   "keywords": [
-    "jade",
     "loopback",
     "API-Hero"
   ],
   "version": "0.0.1-alpha",
   "main":"./index.js",
-  "asset_paths":["./assets/_layouts", "./assets/_mixins"],
+  "moduleConfig": {
+  	"assets":[],
+  	"templates":[],
+  	"moduleOptions": {
+  	}
+  },
+  
   "licenses": [
     {
       "type": "MIT",
@@ -18,13 +23,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "github.com/vancarney/apihero-module-jade-router.git"
+    "url": "github.com/vancarney/apihero-module-stub.git"
   },
   "dependencies": {
-    "lodash": "^3.6.0",
-    "jade":"^1.11.0",
-    "fs-extra":"^0.20.1",
-    "connect-modrewrite":"^0.8.1"
   },
   "devDependencies": {
     "coffee-script": "^1.9.1",
@@ -37,7 +38,7 @@
     "loopback-connector": "^2.2.1",
     "api-hero": "git+https://github.com/vancarney/rikki-tikki#api-hero"
   },
-  "homepage": "https://github.com/vancarney/apihero-module-jade-router",
+  "homepage": "https://github.com/vancarney/apihero-module-stub",
   "scripts": {
     "test": "cake test"
   }
