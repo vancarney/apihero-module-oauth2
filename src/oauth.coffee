@@ -1,4 +1,5 @@
 module.exports = (app, options) ->
+
   ensureLoggedIn = ->
     (req, res, next) ->
       return res.redirect '/login' unless req.session.user and req.session.user.id
@@ -97,6 +98,7 @@ module.exports = (app, options) ->
   
   # Move to routes ------------------------------------------------------------
   app.get "/authorize", ensureLoggedIn(), oauth2.authorization((clientID, redirectURI, done) ->
+    console.log 'authorize'
     models.OAuthClientApplication.findById clientID, (err, client) ->
       return done(err)  if err
       return done(null, false)  unless client
@@ -104,6 +106,7 @@ module.exports = (app, options) ->
       done null, client, redirectURI
 
   ), (req, res) ->
+    console.log 'authorize'
     res.json
       transactionID: req.oauth2.transactionID
       user: req.user
